@@ -404,8 +404,9 @@ declare namespace Accelatrix {
         }
         interface IWebApiBase {
             /** Gets or sets the base url. */
-            /** Gets or sets the base url. */
             BaseUrl: string;
+            /** Gets or sets the timeout of requests in ms. */
+            Timeout: number;
             /**
              * Performs a GET operation from the server.
              * @param controller The server controller to invoke.
@@ -497,6 +498,9 @@ declare namespace Accelatrix {
             /** Gets or sets the base url. */
             get BaseUrl(): string;
             set BaseUrl(value: string);
+            /** Gets or sets the timeout for requests in ms. */
+            get Timeout(): number;
+            set Timeout(value: number);
             /**
              * Creates a new WebApiBase instance.
              */
@@ -1069,7 +1073,7 @@ declare namespace Accelatrix {
         /**
          * The states of a managed property.
          */
-        enum PropertyState {
+        export enum PropertyState {
             /** The property is up-to-date. */
             UpToDate = 0,
             /** The property is dirty, which means, an update is pending. */
