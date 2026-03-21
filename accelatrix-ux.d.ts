@@ -402,6 +402,7 @@ declare namespace Accelatrix {
             /** An optional callback to invoke once the request is complete. */
             Finally(callback: () => void): IServerPromise<T>;
         }
+        /** The base functionality of a WebApi invoker. */
         interface IWebApiBase {
             /** Gets or sets the base url. */
             BaseUrl: string;
@@ -705,6 +706,9 @@ declare namespace Accelatrix {
             /** Gets or sets the base url. */
             static get BaseUrl(): string;
             static set BaseUrl(value: string);
+            /** Gets or sets the timeout in ms. */
+            static get Timeout(): number;
+            static set Timeout(value: number);
             /** Gets or sets a global event handler when receiving responses. A good hook for analytics or redirects to login pages. If the request has been diverted and should not continue, return true. */
             static get OnReceive(): (result?: any, exception?: Accelatrix.Backend.IServerException, elapsed?: number, isBackground?: boolean) => boolean;
             static set OnReceive(value: (result?: any, exception?: Accelatrix.Backend.IServerException, elapsed?: number, isBackground?: boolean) => boolean);
@@ -884,13 +888,31 @@ declare namespace Accelatrix {
         MakeSmart(): HTMLSelectElement;
         /**
         * Makes a select box searchable.
-        * @param elementRenderer A function used to render elements in the dropdown.
+         * @param keySelector The function that selects the key from the entry. This will be used as the "Value" of the option element.
+         * @param textSelector The function that selects the text from the entry. This will be used as the "Text" of the option element.
+         * @param elementRenderer A function used to render elements in the dropdown.
         */
-        MakeSmart(elementRenderer: (member: {
-            Value: string;
-            Text: string;
-            Selected: boolean;
-        }, searchTerm?: string) => HTMLElement): HTMLSelectElement;
+        MakeSmart<T>(keySelector: (item: T) => string, textSelector: (item: T) => string, elementRenderer?: (member: T, selected: boolean, searchTerm?: string) => HTMLElement): HTMLSelectElement;
+    }
+declare namespace Accelatrix {
+    /** Deals with user experience. */
+    namespace Ux {
+    }
+}
+
+
+    interface HTMLSelectElement {
+        /**
+         * Makes a SELECT into something that can search against the backend in a lazy way.
+         * @param select The select to turn into a smart search.
+         * @param searcher The function that given a serch term, returns a promise with the results.
+         * @param keySelector The function that selects the key from the entry. This will be used as the value of the option element.
+         * @param textSelector The function that selects the text from the entry. This will be used as the text of the option element.
+         * @param onSelected The function to call when an entry is selected. The entry will be passed as a parameter.
+         * @param minCharSize The minimum number of characters to trigger a search.
+         * @returns Returns the select element passed in for chaining purposes.
+         */
+        MakeSmartSearch<T>(searcher: (searchTerm: string) => Accelatrix.Async.IChainablePromise<Array<T>>, keySelector: (item: T) => string, textSelector: (item: T) => string, onSelected?: (entry: T) => void, elementRenderer?: (member: T, selected: boolean, searchTerm?: string) => HTMLElement, minCharSize?: number): HTMLSelectElement;
     }
 declare namespace Accelatrix {
     /** Deals with user experience. */
