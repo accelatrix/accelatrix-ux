@@ -892,7 +892,12 @@ declare namespace Accelatrix {
          * @param textSelector The function that selects the text from the entry. This will be used as the "Text" of the option element.
          * @param elementRenderer A function used to render elements in the dropdown.
         */
-        MakeSmart<T>(keySelector: (item: T) => string, textSelector: (item: T) => string, elementRenderer?: (member: T, selected: boolean, searchTerm?: string) => HTMLElement): HTMLSelectElement;
+        MakeSmart<T>(keySelector: (item: T) => string, textSelector: (item: T) => string, elementRenderer?: (member: T, selected: boolean, searchTerm?: string) => HTMLElement): ISmartSelect<T>;
+    }
+    /** A select with search functionality. */
+    interface ISmartSelect<T> extends HTMLSelectElement {
+        /** Add members to the drop down. */
+        PushMembers(members: T[]): void;
     }
 declare namespace Accelatrix {
     /** Deals with user experience. */
@@ -912,7 +917,7 @@ declare namespace Accelatrix {
          * @param minCharSize The minimum number of characters to trigger a search.
          * @returns Returns the select element passed in for chaining purposes.
          */
-        MakeSmartSearch<T>(searcher: (searchTerm: string) => Accelatrix.Async.IChainablePromise<Array<T>>, keySelector: (item: T) => string, textSelector: (item: T) => string, onSelected?: (entry: T) => void, elementRenderer?: (member: T, selected: boolean, searchTerm?: string) => HTMLElement, minCharSize?: number): HTMLSelectElement;
+        MakeSmartSearch<T>(searcher: (searchTerm: string) => Accelatrix.Async.IChainablePromise<Array<T>>, keySelector: (item: T) => string, textSelector: (item: T) => string, onSelected?: (entry: T) => void, elementRenderer?: (member: T, selected: boolean, searchTerm?: string) => HTMLElement, minCharSize?: number): ISmartSelect<T>;
     }
 declare namespace Accelatrix {
     /** Deals with user experience. */
