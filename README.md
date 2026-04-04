@@ -1,7 +1,7 @@
 # Accelatrix UX
 
 > A set of must-have general abstractions needed in any Web UI project, including state management, input field validators, typed WebApi backend integration among many other goodies.
-> v1.0.7 depends on Accelatrix and is compatible with ECMAScript 5, ES6, TypeScript, React, Angular and Vue.
+> v1.0.8 depends on Accelatrix and is compatible with ECMAScript 5, ES6, TypeScript, React, Angular and Vue.
 
 Accelatrix UX is free. Detailed license at https://github.com/accelatrix/accelatrix-ux/blob/main/LICENSE.md
 
