@@ -851,7 +851,7 @@ declare global {
          * @param minChars The min characters for it to engage.
          * @returns Returns the element.
          */
-        LazyReact: (callback: (value: string) => void, minChars?: number) => HTMLInputElement;
+        LazyReact: (callback: (value: string, event?: Event) => void, minChars?: number) => HTMLInputElement;
     }
     export interface HTMLSelectElement {
         /**
@@ -874,7 +874,7 @@ declare global {
          * @param minChars The min characters for it to engage.
          * @returns Returns the element.
          */
-        LazyReact: (callback: (value: string) => void, minChars?: number) => HTMLInputElement;
+        LazyReact: (callback: (value: string, event?: Event) => void, minChars?: number) => HTMLInputElement;
     }
 }
 export declare namespace Accelatrix {
@@ -903,6 +903,8 @@ declare global {
     export interface ISmartSelect<T> extends HTMLSelectElement {
         /** Add members to the drop down. */
         PushMembers(members: T[]): void;
+        /** Clears all members from the drop down. */
+        ClearMembers: void;
     }
 }
 export declare namespace Accelatrix {
@@ -924,7 +926,7 @@ declare global {
          * @param minCharSize The minimum number of characters to trigger a search.
          * @returns Returns the select element passed in for chaining purposes.
          */
-        MakeSmartSearch<T>(searcher: (searchTerm: string) => Accelatrix.Async.IChainablePromise<Array<T>>, keySelector: (item: T) => string, textSelector: (item: T) => string, onSelected?: (entry: T) => void, elementRenderer?: (member: T, selected: boolean, searchTerm?: string) => HTMLElement, minCharSize?: number): ISmartSelect<T>;
+        MakeSmartSearch<T>(searcher: (searchTerm: string) => Accelatrix.Async.IChainablePromise<Array<T>>, keySelector: (item: T) => string, textSelector: (item: T) => string, onSelected: (entry: T) => void, elementRenderer?: (member: T, selected: boolean, searchTerm?: string) => HTMLElement, minCharSize?: number): ISmartSelect<T>;
     }
 }
 export declare namespace Accelatrix {
