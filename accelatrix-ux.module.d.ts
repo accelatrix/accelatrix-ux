@@ -903,8 +903,10 @@ declare global {
     export interface ISmartSelect<T> extends HTMLSelectElement {
         /** Add members to the drop down. */
         PushMembers(members: T[]): void;
-        /** Clears all members from the drop down. */
-        ClearMembers: void;
+        /** Clears all members from the drop down, except the currently selected value. Use Select.Empy() first to completely reset. */
+        ClearMembers(): void;
+        /** Gets the selected member. */
+        Selected: T;
     }
 }
 export declare namespace Accelatrix {
