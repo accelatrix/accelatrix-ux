@@ -1,4 +1,4 @@
-/* Accelatrix UX v1.0.13 */
+/* Accelatrix UX v1.0.14 */
 /* Copyright (c) 2025 Miguel@Ferreira-family.org */
 /* License agreement: https://github.com/accelatrix/accelatrix-ux/blob/main/LICENSE.md */
 /* Latest version availabe at: */
