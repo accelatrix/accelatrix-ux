@@ -1028,6 +1028,8 @@ export declare namespace Accelatrix {
             function HideAll(): void;
             /** Removes all SmartBalloons currently active. */
             function RemoveAll(): void;
+            /** Removes a SmartBalloon from an element. */
+            function Remove(element: HTMLElement): void;
         }
     }
 }
