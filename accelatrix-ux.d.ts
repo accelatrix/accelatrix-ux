@@ -339,7 +339,7 @@ declare namespace Accelatrix {
                 * @param data The object to post.
                 * @param callback The result of the server, which is a typed result or an exception.
                 */
-            Post<T>(url: string, data: any, callback: (result: T, exception: IServerException) => void): IServerRequestHandler;
+            Post<T>(url: string, data: any, callback: (result: T, exception: IServerException) => void, onProgress?: (chunck: string) => void): IServerRequestHandler;
             /**
                 * Posts any content onto the server, but expects a JSON response.
                 * @param url The relative or absolute URL to post to.
@@ -359,7 +359,7 @@ declare namespace Accelatrix {
                 * @param cacheable If the server response is to be cached by the browser.
                 */
             private TagUrl;
-            /**
+            /**\
                 * Performs a server GET operation.
                 * @param url The relative or absolute URL to invoke.
                 * @param cache If the response can be cached by the browse.
@@ -369,7 +369,7 @@ declare namespace Accelatrix {
                 */
             protected GetData(url: string, cache: boolean, headers: {
                 [key: string]: string;
-            }, timeout: number, callback: (responseText: string, statusCode: number, statusText: string, getHeader: (headerName: string) => string, isError: boolean) => void): () => void;
+            }, timeout: number, callback: (responseText: string, statusCode: number, statusText: string, getHeader: (headerName: string) => string, isError: boolean) => void, onProgress?: (chunck: string) => void): () => void;
             /**
                 * Performs a server POST operation.
                 * @param url The relative or absolute URL to invoke.
@@ -380,7 +380,7 @@ declare namespace Accelatrix {
                 */
             protected PostData(url: string, data: any, headers: {
                 [key: string]: string;
-            }, timeout: number, callback: (responseText: string, statusCode: number, statusText: string, getHeader: (headerName: string) => string, isError: boolean) => void): () => void;
+            }, timeout: number, callback: (responseText: string, statusCode: number, statusText: string, getHeader: (headerName: string) => string, isError: boolean) => void, onProgress?: (chunck: string) => void): () => void;
             private static ServerException;
         }
     }
@@ -445,13 +445,13 @@ declare namespace Accelatrix {
              */
             Get<T>(controller: string, action: string, arg0: any, arg1: any, arg2: any): IServerPromise<T>;
             /**
-                * Posts an object to the server.
-                * @param controller The server controller to invoke.
-                * @param action The server action to invoke.
-                * @param obj The object to post.
-                * @param priority A relative priority for the request.
-                * @returns Returns a cancellable promise.
-                */
+            * Posts an object to the server.
+            * @param controller The server controller to invoke.
+            * @param action The server action to invoke.
+            * @param obj The object to post.
+            * @param priority A relative priority for the request.
+            * @returns Returns a cancellable promise.
+            */
             Post<T>(controller: string, action: string, obj: any, priority?: number): IServerPromise<T>;
             /**
              * Posts an object to the server.
@@ -483,6 +483,45 @@ declare namespace Accelatrix {
              * @returns Returns a cancellable promise.
              */
             Post<T>(controller: string, action: string, obj: any, arg0?: any, arg1?: any, arg2?: any): IServerPromise<T>;
+            /**
+             * Posts an object to the server and streams the result chunck by chunck (multiple Then invocations).
+             * @param controller The server controller to invoke.
+             * @param action The server action to invoke.
+             * @param obj The object to post.
+             * @param priority A relative priority for the request.
+             * @returns Returns a cancellable promise.
+            */
+            StreamPost(controller: string, action: string, obj: any, priority?: number): IServerPromise<string>;
+            /**
+             * Posts an object to the server and streams the result chunck by chunck (multiple Then invocations).
+             * @param controller The server controller to invoke.
+             * @param action The server action to invoke.
+             * @param obj The object to post.
+             * @param arg0 An optional argument to pass onto the action.
+             * @returns Returns a cancellable promise.
+             */
+            StreamPost(controller: string, action: string, obj: any, arg0?: any): IServerPromise<string>;
+            /**
+             * Posts an object to the server and streams the result chunck by chunck (multiple Then invocations).
+             * @param controller The server controller to invoke.
+             * @param action The server action to invoke.
+             * @param obj The object to post.
+             * @param arg0 An optional argument to pass onto the action.
+             * @param arg1 A second optional argument to pass onto the action.
+             * @returns Returns a cancellable promise.
+             */
+            StreamPost(controller: string, action: string, obj: any, arg0?: any, arg1?: any): IServerPromise<string>;
+            /**
+             * Posts an object to the server and streams the result chunck by chunck (multiple Then invocations).
+             * @param controller The server controller to invoke.
+             * @param action The server action to invoke.
+             * @param obj The object to post.
+             * @param arg0 An optional argument to pass onto the action.
+             * @param arg1 A second optional argument to pass onto the action.
+             * @param arg2 A third optional argument to pass onto the action.
+             * @returns Returns a cancellable promise.
+             */
+            StreamPost(controller: string, action: string, obj: any, arg0?: any, arg1?: any, arg2?: any): IServerPromise<string>;
             /**
              * Uploads files to the server.
              * @param controller The controller.
@@ -593,6 +632,45 @@ declare namespace Accelatrix {
             */
             Post<T>(controller: string, action: string, obj: any, arg0?: any, arg1?: any, arg2?: any): IServerPromise<T>;
             /**
+            * Posts an object to the server and streams the result chunck by chunck (multiple Then invocations).
+            * @param controller The server controller to invoke.
+            * @param action The server action to invoke.
+            * @param obj The object to post.
+            * @param priority A relative priority for the request.
+            * @returns Returns a cancellable promise.
+            */
+            StreamPost(controller: string, action: string, obj: any, priority?: number): IServerPromise<string>;
+            /**
+            * Posts an object to the server and streams the result chunck by chunck (multiple Then invocations).
+            * @param controller The server controller to invoke.
+            * @param action The server action to invoke.
+            * @param obj The object to post.
+            * @param arg0 An optional argument to pass onto the action.
+            * @returns Returns a cancellable promise.
+            */
+            StreamPost(controller: string, action: string, obj: any, arg0?: any): IServerPromise<string>;
+            /**
+            * Posts an object to the server and streams the result chunck by chunck (multiple Then invocations).
+            * @param controller The server controller to invoke.
+            * @param action The server action to invoke.
+            * @param obj The object to post.
+            * @param arg0 An optional argument to pass onto the action.
+            * @param arg1 A second optional argument to pass onto the action.
+            * @returns Returns a cancellable promise.
+            */
+            StreamPost(controller: string, action: string, obj: any, arg0?: any, arg1?: any): IServerPromise<string>;
+            /**
+            * Posts an object to the server and streams the result chunck by chunck (multiple Then invocations).
+            * @param controller The server controller to invoke.
+            * @param action The server action to invoke.
+            * @param obj The object to post.
+            * @param arg0 An optional argument to pass onto the action.
+            * @param arg1 A second optional argument to pass onto the action.
+            * @param arg2 A third optional argument to pass onto the action.
+            * @returns Returns a cancellable promise.
+            */
+            StreamPost(controller: string, action: string, obj: any, arg0?: any, arg1?: any, arg2?: any): IServerPromise<string>;
+            /**
              * Uploads files to the server.
              * @param controller The controller.
              * @param action The action in the controller.
@@ -688,6 +766,45 @@ declare namespace Accelatrix {
              */
             Post<T>(controller: string, action: string, obj: any, arg0?: any, arg1?: any, arg2?: any): Accelatrix.Backend.IServerPromise<T>;
             /**
+             * Posts an object to the server and streams the result chunck by chunck (multiple Then invocations).
+             * @param controller The server controller to invoke.
+             * @param action The server action to invoke.
+             * @param obj The object to post.
+             * @param priority A relative priority for the request.
+             * @returns Returns a cancellable promise.
+             */
+            StreamPost(controller: string, action: string, obj: any, priority?: number): Accelatrix.Backend.IServerPromise<string>;
+            /**
+             * Posts an object to the server and streams the result chunck by chunck (multiple Then invocations).
+             * @param controller The server controller to invoke.
+             * @param action The server action to invoke.
+             * @param obj The object to post.
+             * @param arg0 An optional argument to pass onto the action.
+             * @returns Returns a cancellable promise.
+             */
+            StreamPost(controller: string, action: string, obj: any, arg0?: any): Accelatrix.Backend.IServerPromise<string>;
+            /**
+             * Posts an object to the server and streams the result chunck by chunck (multiple Then invocations).
+             * @param controller The server controller to invoke.
+             * @param action The server action to invoke.
+             * @param obj The object to post.
+             * @param arg0 An optional argument to pass onto the action.
+             * @param arg1 A second optional argument to pass onto the action.
+             * @returns Returns a cancellable promise.
+             */
+            StreamPost(controller: string, action: string, obj: any, arg0?: any, arg1?: any): Accelatrix.Backend.IServerPromise<string>;
+            /**
+             * Posts an object to the server and streams the result chunck by chunck (multiple Then invocations).
+             * @param controller The server controller to invoke.
+             * @param action The server action to invoke.
+             * @param obj The object to post.
+             * @param arg0 An optional argument to pass onto the action.
+             * @param arg1 A second optional argument to pass onto the action.
+             * @param arg2 A third optional argument to pass onto the action.
+             * @returns Returns a cancellable promise.
+             */
+            StreamPost(controller: string, action: string, obj: any, arg0?: any, arg1?: any, arg2?: any): Accelatrix.Backend.IServerPromise<string>;
+            /**
              * Uploads files to the server.
              * @param controller The controller.
              * @param action The action in the controller.
@@ -776,6 +893,34 @@ declare namespace Accelatrix {
              * @returns Returns a cancellable promise.
              */
             static Post<T>(controller: string, action: string, obj: any, arg0?: any, arg1?: any): Accelatrix.Backend.IServerPromise<T>;
+            /**
+             * Posts an object to the server and streams the result chunck by chunck (multiple Then invocations).
+             * @param controller The server controller to invoke.
+             * @param action The server action to invoke.
+             * @param obj The object to post.
+             * @param priority A relative priority for the request.
+             * @returns Returns a cancellable promise.
+             */
+            static StreamPost(controller: string, action: string, obj: any, priority?: number): Accelatrix.Backend.IServerPromise<string>;
+            /**
+             * Posts an object to the server and streams the result chunck by chunck (multiple Then invocations).
+             * @param controller The server controller to invoke.
+             * @param action The server action to invoke.
+             * @param obj The object to post.
+             * @param arg0 An optional argument to pass onto the action.
+             * @returns Returns a cancellable promise.
+             */
+            static StreamPost(controller: string, action: string, obj: any, arg0?: any): Accelatrix.Backend.IServerPromise<string>;
+            /**
+             * Posts an object to the server and streams the result chunck by chunck (multiple Then invocations).
+             * @param controller The server controller to invoke.
+             * @param action The server action to invoke.
+             * @param obj The object to post.
+             * @param arg0 An optional argument to pass onto the action.
+             * @param arg1 A second optional argument to pass onto the action.
+             * @returns Returns a cancellable promise.
+             */
+            static StreamPost(controller: string, action: string, obj: any, arg0?: any, arg1?: any): Accelatrix.Backend.IServerPromise<string>;
             /**
              * Uploads files to the server.
              * @param controller The controller.
