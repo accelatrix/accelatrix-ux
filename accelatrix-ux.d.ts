@@ -346,11 +346,12 @@ declare namespace Accelatrix {
                 * @param data The data to post.
                 * @param contentType The type of content, e.g. application/x-www-form-urlencoded for FORMs, application/fido+uaf for NEVIS FIDO, etc.
                 * @param callback The result of the server, which may be a typed result, plain text/html or an exception.
+                * @param onProgress Collects delta chunks sent by the server as they arrive.
                 * @returns Returns a request handler.
                 */
             PostContent<T>(url: string, data: {
                 [key: string]: any;
-            } | any, contentType: string, callback: (result: T, exception: IServerException) => void): IServerRequestHandler;
+            } | any, contentType: string, callback: (result: T, exception: IServerException) => void, onProgress?: (chunck: string) => void): IServerRequestHandler;
             private InjectType;
             private GetBaseUrl;
             /**
