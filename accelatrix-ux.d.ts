@@ -338,20 +338,22 @@ declare namespace Accelatrix {
                 * @param url The relative or absolute URL to invoke.
                 * @param data The object to post.
                 * @param callback The result of the server, which is a typed result or an exception.
+                * @param onProgress An optional callback to collect individual chunks if the response is streamed.
                 */
             Post<T>(url: string, data: any, callback: (result: T, exception: IServerException) => void, onProgress?: (chunck: string) => void): IServerRequestHandler;
             /**
-                * Posts any content onto the server, but expects a JSON response.
-                * @param url The relative or absolute URL to post to.
-                * @param data The data to post.
-                * @param contentType The type of content, e.g. application/x-www-form-urlencoded for FORMs, application/fido+uaf for NEVIS FIDO, etc.
-                * @param callback The result of the server, which may be a typed result, plain text/html or an exception.
-                * @param onProgress Collects delta chunks sent by the server as they arrive.
-                * @returns Returns a request handler.
-                */
+              * Posts any content onto the server, but expects a JSON response.
+              * @param url The relative or absolute URL to post to.
+              * @param data The data to post.
+              * @param contentType The type of content, e.g. application/x-www-form-urlencoded for FORMs, application/fido+uaf for NEVIS FIDO, etc.
+              * @param callback The result of the server, which may be a typed result, plain text/html or an exception.
+              * @param onProgress An optional callback to collect individual chunks if the response is streamed.
+              * @param onUploadProgress An optional callback to collect the progress of the upload.
+              * @returns Returns a request handler.
+             */
             PostContent<T>(url: string, data: {
                 [key: string]: any;
-            } | any, contentType: string, callback: (result: T, exception: IServerException) => void, onProgress?: (chunck: string) => void): IServerRequestHandler;
+            } | any, contentType: string, callback: (result: T, exception: IServerException) => void, onProgress?: (chunck: string) => void, onUploadProgress?: (sent: number, total: number) => void): IServerRequestHandler;
             private InjectType;
             private GetBaseUrl;
             /**
@@ -381,7 +383,7 @@ declare namespace Accelatrix {
                 */
             protected PostData(url: string, data: any, headers: {
                 [key: string]: string;
-            }, timeout: number, callback: (responseText: string, statusCode: number, statusText: string, getHeader: (headerName: string) => string, isError: boolean) => void, onProgress?: (chunck: string) => void): () => void;
+            }, timeout: number, callback: (responseText: string, statusCode: number, statusText: string, getHeader: (headerName: string) => string, isError: boolean) => void, onProgress?: (chunck: string) => void, onUploadProgress?: (sent: number, total: number) => void): () => void;
             private static ServerException;
         }
     }
@@ -490,7 +492,7 @@ declare namespace Accelatrix {
              * @param action The server action to invoke.
              * @param obj The object to post.
              * @param priority A relative priority for the request.
-             * @returns Returns a cancellable promise.
+             * @returns Returns a cancellable promise whose .then() callback is invoked multiple times as chunks become available.
             */
             StreamPost(controller: string, action: string, obj: any, priority?: number): IServerPromise<string>;
             /**
@@ -499,7 +501,7 @@ declare namespace Accelatrix {
              * @param action The server action to invoke.
              * @param obj The object to post.
              * @param arg0 An optional argument to pass onto the action.
-             * @returns Returns a cancellable promise.
+             * @returns Returns a cancellable promise whose .then() callback is invoked multiple times as chunks become available.
              */
             StreamPost(controller: string, action: string, obj: any, arg0?: any): IServerPromise<string>;
             /**
@@ -509,7 +511,7 @@ declare namespace Accelatrix {
              * @param obj The object to post.
              * @param arg0 An optional argument to pass onto the action.
              * @param arg1 A second optional argument to pass onto the action.
-             * @returns Returns a cancellable promise.
+             * @returns Returns a cancellable promise whose .then() callback is invoked multiple times as chunks become available.
              */
             StreamPost(controller: string, action: string, obj: any, arg0?: any, arg1?: any): IServerPromise<string>;
             /**
@@ -520,7 +522,7 @@ declare namespace Accelatrix {
              * @param arg0 An optional argument to pass onto the action.
              * @param arg1 A second optional argument to pass onto the action.
              * @param arg2 A third optional argument to pass onto the action.
-             * @returns Returns a cancellable promise.
+             * @returns Returns a cancellable promise whose .then() callback is invoked multiple times as chunks become available.
              */
             StreamPost(controller: string, action: string, obj: any, arg0?: any, arg1?: any, arg2?: any): IServerPromise<string>;
             /**
@@ -528,9 +530,20 @@ declare namespace Accelatrix {
              * @param controller The controller.
              * @param action The action in the controller.
              * @param files The files to upload.
-             * @returns Returns the promise.
+             * @returns Returns the cancelable promise.
              */
             UploadFiles<T>(controller: string, action: string, files: FileList): IServerPromise<T>;
+            /**
+             * Uploads files to the server and reports upload and download progress.
+             * @param controller The controller.
+             * @param action The action in the controller.
+             * @param files The files to upload.
+             * @returns Returns a cancellable promise whose .then() callback is invoked multiple times as chunks become available or upload progresses.
+             */
+            StreamUploadFiles(controller: string, action: string, files: FileList | Array<File>): IServerPromise<{
+                UploadedPercentage: number;
+                DownloadedChunk: string;
+            }>;
         }
         /** A generic implementation of a WebApi client. */
         class WebApiBase implements IWebApiBase {
@@ -638,7 +651,7 @@ declare namespace Accelatrix {
             * @param action The server action to invoke.
             * @param obj The object to post.
             * @param priority A relative priority for the request.
-            * @returns Returns a cancellable promise.
+            * @returns Returns a cancellable promise whose .then() callback is invoked multiple times as chunks become available.
             */
             StreamPost(controller: string, action: string, obj: any, priority?: number): IServerPromise<string>;
             /**
@@ -647,7 +660,7 @@ declare namespace Accelatrix {
             * @param action The server action to invoke.
             * @param obj The object to post.
             * @param arg0 An optional argument to pass onto the action.
-            * @returns Returns a cancellable promise.
+            * @returns Returns a cancellable promise whose .then() callback is invoked multiple times as chunks become available.
             */
             StreamPost(controller: string, action: string, obj: any, arg0?: any): IServerPromise<string>;
             /**
@@ -657,7 +670,7 @@ declare namespace Accelatrix {
             * @param obj The object to post.
             * @param arg0 An optional argument to pass onto the action.
             * @param arg1 A second optional argument to pass onto the action.
-            * @returns Returns a cancellable promise.
+            * @returns Returns a cancellable promise whose .then() callback is invoked multiple times as chunks become available.
             */
             StreamPost(controller: string, action: string, obj: any, arg0?: any, arg1?: any): IServerPromise<string>;
             /**
@@ -668,7 +681,7 @@ declare namespace Accelatrix {
             * @param arg0 An optional argument to pass onto the action.
             * @param arg1 A second optional argument to pass onto the action.
             * @param arg2 A third optional argument to pass onto the action.
-            * @returns Returns a cancellable promise.
+            * @returns Returns a cancellable promise whose .then() callback is invoked multiple times as chunks become available.
             */
             StreamPost(controller: string, action: string, obj: any, arg0?: any, arg1?: any, arg2?: any): IServerPromise<string>;
             /**
@@ -679,6 +692,17 @@ declare namespace Accelatrix {
              * @returns Returns the promise.
              */
             UploadFiles<T>(controller: string, action: string, files: FileList | Array<File>): IServerPromise<T>;
+            /**
+             * Uploads files to the server and reports upload and download progress.
+             * @param controller The controller.
+             * @param action The action in the controller.
+             * @param files The files to upload.
+             * @returns Returns a cancellable promise whose .then() callback is invoked multiple times as chunks become available or upload progresses.
+             */
+            StreamUploadFiles(controller: string, action: string, files: FileList | Array<File>): IServerPromise<{
+                UploadedPercentage: number;
+                DownloadedChunk: string;
+            }>;
             private static UrlEncodeArgument;
         }
     }
@@ -772,7 +796,7 @@ declare namespace Accelatrix {
              * @param action The server action to invoke.
              * @param obj The object to post.
              * @param priority A relative priority for the request.
-             * @returns Returns a cancellable promise.
+             * @returns Returns a cancellable promise whose .then() callback is invoked multiple times as chunks become available.
              */
             StreamPost(controller: string, action: string, obj: any, priority?: number): Accelatrix.Backend.IServerPromise<string>;
             /**
@@ -781,7 +805,7 @@ declare namespace Accelatrix {
              * @param action The server action to invoke.
              * @param obj The object to post.
              * @param arg0 An optional argument to pass onto the action.
-             * @returns Returns a cancellable promise.
+             * @returns Returns a cancellable promise whose .then() callback is invoked multiple times as chunks become available.
              */
             StreamPost(controller: string, action: string, obj: any, arg0?: any): Accelatrix.Backend.IServerPromise<string>;
             /**
@@ -791,7 +815,7 @@ declare namespace Accelatrix {
              * @param obj The object to post.
              * @param arg0 An optional argument to pass onto the action.
              * @param arg1 A second optional argument to pass onto the action.
-             * @returns Returns a cancellable promise.
+             * @returns Returns a cancellable promise whose .then() callback is invoked multiple times as chunks become available.
              */
             StreamPost(controller: string, action: string, obj: any, arg0?: any, arg1?: any): Accelatrix.Backend.IServerPromise<string>;
             /**
@@ -802,7 +826,7 @@ declare namespace Accelatrix {
              * @param arg0 An optional argument to pass onto the action.
              * @param arg1 A second optional argument to pass onto the action.
              * @param arg2 A third optional argument to pass onto the action.
-             * @returns Returns a cancellable promise.
+             * @returns Returns a cancellable promise whose .then() callback is invoked multiple times as chunks become available.
              */
             StreamPost(controller: string, action: string, obj: any, arg0?: any, arg1?: any, arg2?: any): Accelatrix.Backend.IServerPromise<string>;
             /**
@@ -813,6 +837,17 @@ declare namespace Accelatrix {
              * @returns Returns the promise.
              */
             UploadFiles<T>(controller: string, action: string, files: FileList): Accelatrix.Backend.IServerPromise<T>;
+            /**
+             * Uploads files to the server and reports upload and download progress.
+             * @param controller The controller.
+             * @param action The action in the controller.
+             * @param files The files to upload.
+             * @returns Returns a cancellable promise whose .then() callback is invoked multiple times as chunks become available or upload progresses.
+             */
+            StreamUploadFiles(controller: string, action: string, files: FileList | Array<File>): Accelatrix.Backend.IServerPromise<{
+                UploadedPercentage: number;
+                DownloadedChunk: string;
+            }>;
         }
         /** WebApi RESTful invoker with an embedded queueing engine. */
         class WebApi {
@@ -930,6 +965,17 @@ declare namespace Accelatrix {
              * @returns Returns the promise.
              */
             static UploadFiles<T>(controller: string, action: string, files: FileList | Array<File>): Accelatrix.Backend.IServerPromise<T>;
+            /**
+             * Uploads files to the server and reports upload and download progress.
+             * @param controller The controller.
+             * @param action The action in the controller.
+             * @param files The files to upload.
+             * @returns Returns a cancellable promise whose .then() callback is invoked multiple times as chunks become available or upload progresses.
+             */
+            static StreamUploadFiles(controller: string, action: string, files: FileList | Array<File>): Accelatrix.Backend.IServerPromise<{
+                UploadedPercentage: number;
+                DownloadedChunk: string;
+            }>;
             /**
              * Logs an object, typically an unmanaged exception, back to the server in the background.
              * @param controller The controller to target the post.
